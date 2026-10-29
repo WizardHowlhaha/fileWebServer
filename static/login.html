@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>登录 · 文件归档</title><link rel="stylesheet" href="/styles.css"></head>
+<body class="login-page">
+  <main class="login-shell">
+    <div class="login-mark">FW</div>
+    <div class="login-kicker">SECURE WORKSPACE · 01</div>
+    <h1>欢迎回来</h1>
+    <p class="login-lede">登录后管理归档文件，并使用受限的文件助手。</p>
+    <form id="loginForm" class="login-form">
+      <label class="field-label" for="loginUsername">用户名</label>
+      <input id="loginUsername" autocomplete="username" value="admin" required>
+      <label class="field-label" for="loginPassword">密码</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+      <label class="login-remember" for="rememberLogin"><input id="rememberLogin" type="checkbox" checked><span>在此设备保持登录</span></label>
+      <button class="button primary login-submit" type="submit">进入工作空间 <span>→</span></button>
+      <p class="login-error" id="loginError" aria-live="polite"></p>
+    </form>
+    <small class="login-foot">LOCAL VAULT · SESSION PROTECTED</small>
+  </main>
+  <script src="/login.js"></script>
+</body>
+</html>

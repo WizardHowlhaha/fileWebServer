@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FileWeb · 文件归档</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar" id="topbar">
+    <div class="brand"><span class="brand-mark">FW</span><div><strong>文件归档</strong><small>SECURE WORKSPACE · 01</small></div></div>
+    <div class="top-actions"><span class="secure-dot"></span><span>受保护连接</span><span class="top-divider"></span><span class="mono-label">LOCAL VAULT</span><button class="user-menu" id="userMenuBtn" type="button" title="用户管理" aria-label="用户管理"><span class="user-initial" id="userInitial">A</span><img id="userAvatar" alt="" hidden><span id="userName">admin</span><span class="user-chevron">⌄</span></button></div>
+  </header>
+  <main class="shell">
+    <section class="workspace">
+      <div class="toolbar">
+        <nav class="crumbs" id="crumbs" aria-label="面包屑"></nav>
+        <div class="toolbar-actions">
+          <button class="button subtle" id="refreshBtn" title="刷新列表"><span>↻</span> 刷新</button>
+          <button class="button primary" id="newFolderBtn"><span>＋</span> 新建文件夹</button>
+          <label class="button primary upload-label"><span>↑</span> 上传文件<input id="uploadInput" type="file" multiple hidden></label>
+        </div>
+      </div>
+      <div class="statusline"><span id="locationLabel">根目录</span><span id="itemCount"></span></div>
+      <div class="file-table-wrap">
+        <table class="file-table"><caption class="sr-only">当前归档中的文件和文件夹</caption><thead><tr><th scope="col">名称</th><th scope="col">类型</th><th scope="col">大小</th><th scope="col">修改时间</th><th scope="col"><span class="sr-only">操作</span></th></tr></thead><tbody id="fileRows"></tbody></table>
+        <div class="empty" id="emptyState" hidden><div class="empty-icon">⌁</div><strong>这里还没有文件</strong><span>上传文件或创建一个文件夹开始整理</span></div>
+      </div>
+    </section>
+  </main>
+  <div class="assistant-scrim" id="assistantScrim" aria-hidden="true"></div>
+  <aside class="assistant-panel" id="assistantPanel" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="assistantTitle">
+    <div class="assistant-head">
+      <div class="assistant-title-wrap"><div class="assistant-icon">✦</div><div><strong id="assistantTitle">文件助手</strong><small>CODEX AGENT · 受限模式</small></div></div>
+      <div class="assistant-head-actions"><span class="status-pill">在线</span><button class="icon-button" id="newConversationBtn" title="新建对话" aria-label="新建对话">＋</button><button class="icon-button panel-close" id="minimizeAssistant" title="最小化助手" aria-label="最小化助手">−</button></div>
+    </div>
+    <div class="assistant-workdir">
+      <label class="field-label" for="agentPathSelect">工作目录</label>
+      <div class="workdir-controls"><select id="agentPathSelect" aria-label="选择助手工作目录"></select><button class="scope-current" id="useCurrentPathBtn" type="button" title="使用文件列表当前目录">当前目录</button></div>
+    </div>
+    <div class="assistant-layout">
+      <aside class="conversation-sidebar" aria-label="对话列表">
+        <div class="conversation-label"><span>对话</span><button class="conversation-new" id="sidebarNewConversation" type="button" title="新建对话">＋</button></div>
+        <div class="conversation-list" id="conversationList"></div>
+      </aside>
+      <section class="assistant-chat" aria-label="助手对话">
+        <div class="assistant-intro"><span class="intro-index">01</span><p>从当前归档中提取线索、整理结构，或执行一项受控文件任务。</p></div>
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions text"></div>
+        <form class="assistant-compose" id="assistantForm">
+          <label class="sr-only" for="agentPrompt">发送消息</label>
+          <textarea id="agentPrompt" rows="2" placeholder="描述你希望助手完成的任务…"></textarea>
+          <div class="compose-actions"><label class="check-row"><input type="checkbox" id="allowWrite"><span>允许修改文件</span></label><span class="compose-hint">Enter 发送 · Shift + Enter 换行</span><button class="button assistant-submit" id="runAgentBtn" type="submit"><span>↑</span> 发送</button></div>
+        </form>
+      </section>
+    </div>
+    <div class="assistant-foot"><span class="foot-rule"></span><span>读写权限由每次任务单独授予</span></div>
+  </aside>
+  <button class="assistant-orb" id="assistantOrb" title="打开文件助手" aria-label="打开文件助手" aria-controls="assistantPanel" aria-expanded="false" type="button">
+    <span class="orb-ring"></span><span class="orb-symbol">✦</span><span class="orb-dot"></span>
+  </button>
+  <div class="toast" id="toast" role="status"></div>
+  <dialog id="folderDialog"><form method="dialog" id="folderForm"><div class="dialog-head"><strong>新建文件夹</strong><button class="icon-button" value="cancel">×</button></div><label class="field-label" for="folderName">文件夹名称</label><input id="folderName" autocomplete="off" required maxlength="100"><div class="dialog-actions"><button class="button subtle" value="cancel">取消</button><button class="button primary" id="createFolderConfirm" value="default">创建</button></div></form></dialog>
+  <dialog id="moveDialog"><form method="dialog" id="moveForm"><div class="dialog-head"><div><strong>移动项目</strong><small id="moveSourceLabel"></small></div><button class="icon-button" value="cancel" aria-label="取消移动">×</button></div><label class="field-label" for="moveDestination">目标文件夹路径</label><input id="moveDestination" autocomplete="off" placeholder="例如：归档/2026"><small class="move-hint">输入相对于根目录的路径；留空表示根目录。</small><div class="dialog-actions"><button class="button subtle" value="cancel">取消</button><button class="button primary" id="moveConfirm" value="default">移动</button></div></form></dialog>
+  <dialog id="profileDialog"><form method="dialog" id="profileForm"><div class="dialog-head"><div><strong>用户管理</strong><small>账户安全与头像</small></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></div><div class="profile-block"><div class="profile-avatar"><img id="profileAvatar" alt="当前头像"><span id="profileInitial">A</span></div><div><strong id="profileName">admin</strong><small>管理员</small><label class="button subtle avatar-upload">上传头像<input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></label></div></div><div class="profile-divider"></div><label class="field-label" for="currentPassword">修改密码</label><input id="currentPassword" type="password" autocomplete="current-password" placeholder="当前密码"><input id="newPassword" type="password" autocomplete="new-password" placeholder="新密码（最多 200 个字符）" maxlength="200"><input id="confirmPassword" type="password" autocomplete="new-password" placeholder="再次输入新密码" maxlength="200"><div class="dialog-actions"><button class="button subtle" id="logoutBtn" type="button">切换登录账户</button><button class="button primary" id="passwordConfirm" type="submit">保存密码</button></div></form></dialog>
+  <dialog id="previewDialog"><div class="dialog-head"><div><strong id="previewTitle">文件预览</strong><small id="previewMeta"></small></div><button class="icon-button" id="closePreview" title="关闭预览">×</button></div><div class="preview-body" id="previewBody"></div></dialog>
+  <script src="/app.js"></script>
+</body>
+</html>

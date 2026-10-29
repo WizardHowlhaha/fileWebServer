@@ -1,0 +1,50 @@
+[Unit]
+Description=FileWeb secure archive manager
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=fileweb
+Group=fileweb
+WorkingDirectory=/srv/fileweb/app
+Environment=FILEWEB_ROOT=/srv/fileweb/data
+Environment=FILEWEB_HOST=0.0.0.0
+Environment=FILEWEB_PORT=8787
+# 外部可直接访问的基地址；留空时分享链接按请求 Host 生成
+# Environment=FILEWEB_PUBLIC_URL=http://<host>:8787
+Environment=FILEWEB_USER=admin
+Environment=FILEWEB_PASSWORD_FILE=/etc/fileweb/admin-password
+Environment=FILEWEB_CODEX_BIN=/opt/fileweb/runtime/node_modules/.bin/codex
+Environment=FILEWEB_AGENT_HOME=/var/lib/fileweb/agent-home
+Environment=FILEWEB_PROFILE_DIR=/var/lib/fileweb/profile
+Environment=FILEWEB_SHARE_FILE=/var/lib/fileweb/shares.json
+Environment=FILEWEB_SESSION_FILE=/var/lib/fileweb/sessions.json
+Environment=FILEWEB_AGENT_ALLOW_WRITE=1
+Environment=FILEWEB_AGENT_TIMEOUT=120
+Environment=PATH=/opt/fileweb/runtime/node_modules/.bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 /srv/fileweb/app/server.py
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ReadWritePaths=/srv/fileweb/data /var/lib/fileweb /etc/fileweb/admin-password
+InaccessiblePaths=/root /home
+CapabilityBoundingSet=
+MemoryMax=768M
+TasksMax=128
+TimeoutStopSec=15
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
